@@ -28,6 +28,8 @@ The OpenTrace reference implementation comprises:
 2. Enable Google Analytics for the project, to be used for Firebase Crashlytics and Firebase Remote Config.
 3. Make sure to upgrade the project from the "Spark" free plan to the "Blaze" pay-as-you-go plan to avoid future quota issues.
 
+#### Firebase Authentication
+OpenTrace uses firebase auth to authenticate mobile users via OTP. An alternative approach is to setup your own OTP service to validate and store the mobile numbers in your own backend. This is not included as part of OpenTrace. 
 
 ## Encryption Key
 #### Generate the key
@@ -39,6 +41,9 @@ A simple method to generate a random key and encode it in Base64 is:
 ```shell script
 head -c32 /dev/urandom | base64
 ```
+
+#### Key Rotation
+It is highly recommended that the encryption key is rotated on a regular basis. This step is not included as part of OpenTrace.
 
 #### Store the key in Secret Manager
 Create a new secret in [Secret Manager](https://console.cloud.google.com/security/secret-manager) and add a new version with the key generated above. Note that this requires Billing enabled.
@@ -57,7 +62,6 @@ gcloud --project="${GCLOUD_PROJECT}" secrets create "EncryptionKey" --replicatio
 echo -n "YOUR SECRET RANDOM KEY" | \
   gcloud --project="${GCLOUD_PROJECT}" secrets versions add "EncryptionKey" --data-file=-
 ```
-
 
 #### Firebase Secret Access for Cloud Functions
 The default cloud function IAM user is `<project-id>@appspot.gserviceaccount.com`, it needs to be given the **Secret Manager Secret Accessor** role in order to read data from Secret Manager.
@@ -211,3 +215,12 @@ firebase deploy --only functions
 Once deployed, view the Functions in [Firebase console](https://console.firebase.google.com/) or at [GCP Cloud Functions](https://console.cloud.google.com/functions/list).
 
 If you have set up either the [Android app](https://github.com/opentrace-community/opentrace-android) or [iOS app](https://github.com/opentrace-community/opentrace-ios), you can test the functions by opening the app, going through the registration and verifying that the app displays a pin code in the Upload page.
+
+## ChangeLog
+
+1.0.1
+*   Added alternative for Firebase Authentication
+*   Recommend key rotation
+
+1.0.0
+*   Initial Release
